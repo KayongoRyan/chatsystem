@@ -8,6 +8,9 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import ChatPage from "@/pages/chat";
 import HomePage from "@/pages/home";
 import ReelsPage from "@/pages/reels";
+import DiscoverPage from "@/pages/discover";
+import SoundsPage from "@/pages/sounds";
+import TrendsPage from "@/pages/trends";
 import ProfilePage from "@/pages/profile";
 import SettingsPage from "@/pages/settings";
 import NotFound from "@/pages/not-found";
@@ -19,9 +22,12 @@ function Router() {
         <Route path="/" component={HomePage} />
         <Route path="/chat" component={ChatPage} />
         <Route path="/reels" component={ReelsPage} />
+        <Route path="/discover" component={DiscoverPage} />
+        <Route path="/sounds" component={SoundsPage} />
+        <Route path="/trends" component={TrendsPage} />
         <Route path="/profile" component={ProfilePage} />
         <Route path="/settings" component={SettingsPage} />
-        <Route path="/search" component={HomePage} /> {/* Placeholder reuse */}
+        <Route path="/search" component={HomePage} />
         <Route component={NotFound} />
       </Switch>
     </AppLayout>

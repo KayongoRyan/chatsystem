@@ -75,6 +75,7 @@ export const reels = pgTable("reels", {
   comments: integer("comments").notNull().default(0),
   shares: integer("shares").notNull().default(0),
   musicTrack: text("music_track"),
+  isViralContent: boolean("is_viral_content").notNull().default(false),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
 });
 
@@ -83,6 +84,7 @@ export const insertReelSchema = createInsertSchema(reels).omit({
   likes: true,
   comments: true,
   shares: true,
+  isViralContent: true,
   createdAt: true,
 });
 
@@ -132,3 +134,73 @@ export const follows = pgTable("follows", {
   followeeId: varchar("followee_id").notNull(),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
 });
+
+// TikTok-inspired Features
+
+// Sounds/Music Library
+export const sounds = pgTable("sounds", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  artist: text("artist"),
+  audioUrl: text("audio_url").notNull(),
+  duration: integer("duration"), // seconds
+  uses: integer("uses").notNull().default(0), // How many videos use this sound
+  createdBy: varchar("created_by"), // User ID who uploaded it
+  isTrending: boolean("is_trending").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+});
+
+export const insertSoundSchema = createInsertSchema(sounds).omit({
+  id: true,
+  uses: true,
+  isTrending: true,
+  createdAt: true,
+});
+
+export type InsertSound = z.infer<typeof insertSoundSchema>;
+export type Sound = typeof sounds.$inferSelect;
+
+// Challenges/Trends
+export const challenges = pgTable("challenges", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  description: text("description"),
+  hashtag: text("hashtag").notNull().unique(),
+  coverImage: text("cover_image"),
+  soundId: varchar("sound_id"), // Associated sound
+  participationCount: integer("participation_count").notNull().default(0),
+  views: integer("views").notNull().default(0),
+  isFeatured: boolean("is_featured").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+});
+
+export const insertChallengeSchema = createInsertSchema(challenges).omit({
+  id: true,
+  participationCount: true,
+  views: true,
+  isFeatured: true,
+  createdAt: true,
+});
+
+export type InsertChallenge = z.infer<typeof insertChallengeSchema>;
+export type Challenge = typeof challenges.$inferSelect;
+
+// Duets (Videos created with other users)
+export const duets = pgTable("duets", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  creatorId: varchar("creator_id").notNull(),
+  originalReelId: varchar("original_reel_id").notNull(),
+  duetVideoUrl: text("duet_video_url").notNull(),
+  caption: text("caption"),
+  likes: integer("likes").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+});
+
+export const insertDuetSchema = createInsertSchema(duets).omit({
+  id: true,
+  likes: true,
+  createdAt: true,
+});
+
+export type InsertDuet = z.infer<typeof insertDuetSchema>;
+export type Duet = typeof duets.$inferSelect;

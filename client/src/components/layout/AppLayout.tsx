@@ -1,7 +1,7 @@
 import React from 'react';
-import { Link, useLocation } from 'wouter';
+import { Link, useLocation } from "wouter";
 import { cn } from '@/lib/utils';
-import { Home, Search, PlusSquare, Heart, MessageCircle, Film, User, Settings, Menu } from 'lucide-react';
+import { Home, Search, PlusSquare, Heart, MessageCircle, Film, User, Settings, Zap, Music2, Flame } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { CURRENT_USER } from '@/lib/mock-data';
 
@@ -44,6 +44,9 @@ export function AppLayout({ children }: AppLayoutProps) {
           <NavItem href="/" icon={Home} label="Home" />
           <NavItem href="/search" icon={Search} label="Search" />
           <NavItem href="/reels" icon={Film} label="Reels" />
+          <NavItem href="/discover" icon={Zap} label="Discover" />
+          <NavItem href="/sounds" icon={Music2} label="Sounds" />
+          <NavItem href="/trends" icon={Flame} label="Trends" />
           <NavItem href="/chat" icon={MessageCircle} label="Messages" />
           <NavItem href="/create" icon={PlusSquare} label="Create" />
           <NavItem href="/notifications" icon={Heart} label="Notifications" />
@@ -56,15 +59,18 @@ export function AppLayout({ children }: AppLayoutProps) {
       </div>
 
       {/* Mobile Bottom Nav */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-background border-t border-border z-50 px-6 flex items-center justify-between">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-background border-t border-border z-50 px-3 flex items-center justify-between">
          <Link href="/">
             <Home className={cn("w-6 h-6", isActive('/') && "text-primary stroke-[2.5px]")} />
          </Link>
          <Link href="/search">
             <Search className={cn("w-6 h-6", isActive('/search') && "text-primary stroke-[2.5px]")} />
          </Link>
-         <Link href="/reels">
-            <Film className={cn("w-6 h-6", isActive('/reels') && "text-primary stroke-[2.5px]")} />
+         <Link href="/discover">
+            <Zap className={cn("w-6 h-6", isActive('/discover') && "text-primary stroke-[2.5px]")} />
+         </Link>
+         <Link href="/trends">
+            <Flame className={cn("w-6 h-6", isActive('/trends') && "text-primary stroke-[2.5px]")} />
          </Link>
          <Link href="/chat">
             <MessageCircle className={cn("w-6 h-6", isActive('/chat') && "text-primary stroke-[2.5px]")} />
@@ -80,7 +86,6 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Main Content Area */}
       <main className={cn(
         "flex-1 w-full min-h-screen md:pl-[72px] lg:pl-64 pb-16 md:pb-0",
-        // Chat handles its own layout/scrolling, so we remove padding for it
         location === '/chat' ? "h-screen overflow-hidden" : "overflow-y-auto"
       )}>
         {children}
