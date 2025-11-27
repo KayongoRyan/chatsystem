@@ -75,7 +75,7 @@ export class DatabaseStorage implements IStorage {
     const allPosts = await db.select().from(posts).orderBy(desc(posts.createdAt)).limit(limit);
     
     const enriched = await Promise.all(
-      allPosts.map(async (post) => {
+      allPosts.map(async (post: Post) => {
         const user = await this.getUser(post.userId);
         const postComments = await this.getPostComments(post.id);
         return { ...post, user: user!, comments: postComments };
@@ -220,17 +220,17 @@ export class DatabaseStorage implements IStorage {
   async getFollowers(userId: string): Promise<User[]> {
     const followerIds = await db.select({ followerId: follows.followerId }).from(follows).where(eq(follows.followeeId, userId));
     const followerUsers = await Promise.all(
-      followerIds.map(f => this.getUser(f.followerId))
+      followerIds.map((f: { followerId: string }) => this.getUser(f.followerId))
     );
-    return followerUsers.filter((u): u is User => u !== undefined);
+    return followerUsers.filter((u: User | undefined): u is User => u !== undefined);
   }
 
   async getFollowing(userId: string): Promise<User[]> {
     const followingIds = await db.select({ followeeId: follows.followeeId }).from(follows).where(eq(follows.followerId, userId));
     const followingUsers = await Promise.all(
-      followingIds.map(f => this.getUser(f.followeeId))
+      followingIds.map((f: { followeeId: string }) => this.getUser(f.followeeId))
     );
-    return followingUsers.filter((u): u is User => u !== undefined);
+    return followingUsers.filter((u: User | undefined): u is User => u !== undefined);
   }
 }
 

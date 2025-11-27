@@ -1,7 +1,15 @@
-import type { Express } from "express";
+import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertUserSchema, insertPostSchema, insertReelSchema, insertMessageSchema, insertCommentSchema } from "@shared/schema";
+
+declare global {
+  namespace Express {
+    interface Request {
+      session: any;
+    }
+  }
+}
 
 export async function registerRoutes(
   httpServer: Server,
