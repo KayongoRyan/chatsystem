@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Sidebar } from '@/components/chat/Sidebar';
 import { ChatArea } from '@/components/chat/ChatArea';
+import { MessageComposer } from '@/components/MessageComposer';
 import { INITIAL_CHATS, Chat, CURRENT_USER } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 
@@ -91,10 +92,13 @@ export default function ChatPage() {
       
       <div className="flex-1 flex flex-col h-full relative">
         {selectedChat ? (
-          <ChatArea 
-            chat={selectedChat} 
-            onSendMessage={handleSendMessage} 
-          />
+          <>
+            <ChatArea 
+              chat={selectedChat} 
+              onSendMessage={handleSendMessage} 
+            />
+            <MessageComposer onSendMessage={handleSendMessage} />
+          </>
         ) : (
           <div className="flex items-center justify-center h-full text-muted-foreground">
             Select a chat to start messaging
