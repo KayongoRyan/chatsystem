@@ -158,15 +158,17 @@ export default function ChatPage() {
         />
       </div>
       
-      <div className="flex-1 flex flex-col h-full overflow-hidden relative">
+      <div className="flex-1 flex flex-col overflow-hidden relative">
         {selectedChat ? (
           <>
-            <ChatArea 
-              chat={selectedChat} 
-              onSendMessage={handleSendMessage}
-              onStartAudioCall={() => handleStartCall('audio')}
-              onStartVideoCall={() => handleStartCall('video')}
-            />
+            <div className="flex-1 overflow-hidden">
+              <ChatArea 
+                chat={selectedChat} 
+                onSendMessage={handleSendMessage}
+                onStartAudioCall={() => handleStartCall('audio')}
+                onStartVideoCall={() => handleStartCall('video')}
+              />
+            </div>
             <div className="shrink-0 border-t border-border">
               <MessageComposer onSendMessage={handleSendMessage} />
             </div>
