@@ -8,7 +8,7 @@ interface CallData {
   type: 'audio' | 'video';
   offer?: RTCSessionDescriptionInit;
   answer?: RTCSessionDescriptionInit;
-  candidate?: RTCIceCandidate;
+  candidate?: RTCIceCandidate | null;
 }
 
 export function useCallSocket(userId: string | undefined) {
@@ -47,7 +47,7 @@ export function useCallSocket(userId: string | undefined) {
 
     socket.on('call:answered', (data: { callId: string; answer: RTCSessionDescriptionInit }) => {
       console.log('Call answered');
-      setActiveCall(prev => prev ? { ...prev, status: 'active', answer: data.answer } : null);
+      setActiveCall((prev: any) => prev ? { ...prev, status: 'active', answer: data.answer } : null);
     });
 
     socket.on('call:rejected', (data: { callId: string }) => {
@@ -63,11 +63,11 @@ export function useCallSocket(userId: string | undefined) {
     });
 
     socket.on('call:offer', (data: { callId: string; offer: RTCSessionDescriptionInit }) => {
-      setActiveCall(prev => prev ? { ...prev, offer: data.offer } : null);
+      setActiveCall((prev: any) => prev ? { ...prev, offer: data.offer } : null);
     });
 
     socket.on('call:ice-candidate', (data: { callId: string; candidate: RTCIceCandidate }) => {
-      setActiveCall(prev => prev ? { ...prev, candidate: data.candidate } : null);
+      setActiveCall((prev: any) => prev ? { ...prev, candidate: data.candidate } : null);
     });
 
     socket.on('disconnect', () => {

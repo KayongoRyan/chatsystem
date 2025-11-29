@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { Phone, Video } from 'lucide-react';
 import { Sidebar } from '@/components/chat/Sidebar';
 import { ChatArea } from '@/components/chat/ChatArea';
 import { MessageComposer } from '@/components/MessageComposer';
@@ -168,17 +169,19 @@ export default function ChatPage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => handleStartCall('audio')}
-                  className="px-3 py-2 bg-violet-500 hover:bg-violet-600 text-white rounded-lg text-sm font-medium"
+                  className="p-2 text-gray-500 hover:text-violet-500 transition-colors"
                   data-testid="button-call-audio"
+                  title="Start audio call"
                 >
-                  📞 Call
+                  <Phone className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => handleStartCall('video')}
-                  className="px-3 py-2 bg-violet-500 hover:bg-violet-600 text-white rounded-lg text-sm font-medium"
+                  className="p-2 text-gray-500 hover:text-violet-500 transition-colors"
                   data-testid="button-call-video"
+                  title="Start video call"
                 >
-                  📹 Video
+                  <Video className="w-5 h-5" />
                 </button>
               </div>
             </div>
