@@ -116,40 +116,6 @@ export function ChatArea({ chat, onSendMessage }: ChatAreaProps) {
         </div>
       </ScrollArea>
 
-      {/* Input Area */}
-      <div className="p-4 bg-card border-t">
-        <div className="max-w-3xl mx-auto">
-          <form onSubmit={handleSend} className="flex items-end gap-2 bg-secondary/50 p-2 rounded-3xl border border-transparent focus-within:border-primary/20 focus-within:bg-background focus-within:shadow-lg transition-all duration-300">
-            <Button type="button" variant="ghost" size="icon" className="rounded-full h-10 w-10 text-muted-foreground hover:text-primary hover:bg-primary/10 shrink-0">
-              <Paperclip className="w-5 h-5" />
-            </Button>
-            
-            <Input 
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Type a message..." 
-              className="flex-1 border-none bg-transparent shadow-none focus-visible:ring-0 min-h-[44px] py-3"
-            />
-            
-            <div className="flex items-center gap-1 pr-1">
-              <Button type="button" variant="ghost" size="icon" className="rounded-full h-10 w-10 text-muted-foreground hover:text-primary hover:bg-primary/10 shrink-0">
-                <Smile className="w-5 h-5" />
-              </Button>
-              <Button 
-                type="submit" 
-                size="icon" 
-                disabled={!inputValue.trim()}
-                className={cn(
-                  "rounded-full h-10 w-10 shrink-0 transition-all duration-300",
-                  inputValue.trim() ? "bg-primary hover:bg-primary/90 scale-100" : "bg-muted text-muted-foreground scale-90 opacity-50"
-                )}
-              >
-                <Send className="w-4 h-4" />
-              </Button>
-            </div>
-          </form>
-        </div>
-      </div>
     </div>
   );
 }
