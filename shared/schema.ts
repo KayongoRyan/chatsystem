@@ -310,3 +310,24 @@ export const chatStreaks = pgTable("chat_streaks", {
   lastMessageDate: timestamp("last_message_date"),
   startedAt: timestamp("started_at").notNull().default(sql`now()`),
 });
+
+// Call Sessions (Real-time video/audio calling)
+export const callSessions = pgTable("call_sessions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  callerId: varchar("caller_id").notNull(),
+  recipientId: varchar("recipient_id").notNull(),
+  status: text("status").notNull().default("ringing"), // ringing, active, ended
+  callType: text("call_type").notNull().default("audio"), // audio, video
+  duration: integer("duration"), // seconds
+  startedAt: timestamp("started_at").notNull().default(sql`now()`),
+  endedAt: timestamp("ended_at"),
+});
+
+export const insertCallSessionSchema = createInsertSchema(callSessions).omit({
+  id: true,
+  startedAt: true,
+  endedAt: true,
+});
+
+export type InsertCallSession = z.infer<typeof insertCallSessionSchema>;
+export type CallSession = typeof callSessions.$inferSelect;

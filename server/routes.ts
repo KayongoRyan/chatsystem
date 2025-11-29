@@ -1,7 +1,7 @@
 import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertUserSchema, insertPostSchema, insertReelSchema, insertMessageSchema, insertCommentSchema } from "@shared/schema";
+import { insertUserSchema, insertPostSchema, insertReelSchema, insertMessageSchema, insertCommentSchema, insertCallSessionSchema } from "@shared/schema";
 
 declare global {
   namespace Express {
@@ -238,6 +238,30 @@ export async function registerRoutes(
   app.get("/api/users/:userId/following", async (req, res) => {
     const following = await storage.getFollowing(req.params.userId);
     res.json(following);
+  });
+
+  // Call Routes
+  app.post("/api/calls/initiate", async (req, res) => {
+    try {
+      const callerId = req.session.userId;
+      if (!callerId) return res.status(401).json({ error: "Not authenticated" });
+
+      const parsed = insertCallSessionSchema.parse({
+        callerId,
+        ...req.body
+      });
+
+      res.json(parsed);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid input" });
+    }
+  });
+
+  app.get("/api/calls/active", async (req, res) => {
+    const userId = req.session.userId;
+    if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+    res.json({ status: "ok" });
   });
 
   return httpServer;
