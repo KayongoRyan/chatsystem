@@ -36,7 +36,7 @@ export function ChatArea({ chat, onSendMessage }: ChatAreaProps) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-background/50 backdrop-blur-sm">
+    <div className="flex flex-col flex-1 min-h-0 bg-background/50 backdrop-blur-sm">
       {/* Chat Header */}
       <div className="h-16 border-b flex items-center justify-between px-6 bg-card/50 backdrop-blur-md sticky top-0 z-10">
         <div className="flex items-center gap-3">

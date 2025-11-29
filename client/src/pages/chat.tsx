@@ -90,14 +90,16 @@ export default function ChatPage() {
         />
       </div>
       
-      <div className="flex-1 flex flex-col h-full relative">
+      <div className="flex-1 flex flex-col h-full overflow-hidden relative">
         {selectedChat ? (
           <>
             <ChatArea 
               chat={selectedChat} 
               onSendMessage={handleSendMessage} 
             />
-            <MessageComposer onSendMessage={handleSendMessage} />
+            <div className="shrink-0 border-t border-border">
+              <MessageComposer onSendMessage={handleSendMessage} />
+            </div>
           </>
         ) : (
           <div className="flex items-center justify-center h-full text-muted-foreground">
