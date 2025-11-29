@@ -1,5 +1,4 @@
 import React, { useState, useCallback } from 'react';
-import { Phone, Video } from 'lucide-react';
 import { Sidebar } from '@/components/chat/Sidebar';
 import { ChatArea } from '@/components/chat/ChatArea';
 import { MessageComposer } from '@/components/MessageComposer';
@@ -162,29 +161,6 @@ export default function ChatPage() {
       <div className="flex-1 flex flex-col h-full overflow-hidden relative">
         {selectedChat ? (
           <>
-            <div className="flex items-center justify-between p-4 border-b border-border">
-              <div>
-                <h2 className="font-semibold">{selectedChat.participants[0]?.name}</h2>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleStartCall('audio')}
-                  className="p-2 text-gray-500 hover:text-violet-500 transition-colors"
-                  data-testid="button-call-audio"
-                  title="Start audio call"
-                >
-                  <Phone className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => handleStartCall('video')}
-                  className="p-2 text-gray-500 hover:text-violet-500 transition-colors"
-                  data-testid="button-call-video"
-                  title="Start video call"
-                >
-                  <Video className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
             <ChatArea 
               chat={selectedChat} 
               onSendMessage={handleSendMessage} 
