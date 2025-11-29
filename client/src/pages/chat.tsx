@@ -163,7 +163,9 @@ export default function ChatPage() {
           <>
             <ChatArea 
               chat={selectedChat} 
-              onSendMessage={handleSendMessage} 
+              onSendMessage={handleSendMessage}
+              onStartAudioCall={() => handleStartCall('audio')}
+              onStartVideoCall={() => handleStartCall('video')}
             />
             <div className="shrink-0 border-t border-border">
               <MessageComposer onSendMessage={handleSendMessage} />

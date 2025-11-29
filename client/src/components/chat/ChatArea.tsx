@@ -11,9 +11,11 @@ import { MessageBubble } from './MessageBubble';
 interface ChatAreaProps {
   chat: Chat;
   onSendMessage: (content: string) => void;
+  onStartAudioCall?: () => void;
+  onStartVideoCall?: () => void;
 }
 
-export function ChatArea({ chat, onSendMessage }: ChatAreaProps) {
+export function ChatArea({ chat, onSendMessage, onStartAudioCall, onStartVideoCall }: ChatAreaProps) {
   const [inputValue, setInputValue] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
   const otherUser = chat.participants[0];
@@ -60,10 +62,10 @@ export function ChatArea({ chat, onSendMessage }: ChatAreaProps) {
         </div>
 
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
+          <Button variant="ghost" size="icon" onClick={onStartAudioCall} className="text-muted-foreground hover:text-violet-500 transition-colors" data-testid="button-call-audio">
             <Phone className="w-5 h-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
+          <Button variant="ghost" size="icon" onClick={onStartVideoCall} className="text-muted-foreground hover:text-violet-500 transition-colors" data-testid="button-call-video">
             <Video className="w-5 h-5" />
           </Button>
           <Button variant="ghost" size="icon" className="text-muted-foreground">
