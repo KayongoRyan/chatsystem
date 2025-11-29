@@ -1,4 +1,4 @@
-import { Server as SocketIOServer } from "socket.io";
+import { Server as SocketIOServer, Socket } from "socket.io";
 import { Server } from "http";
 
 export function setupWebSocket(httpServer: Server) {
@@ -10,7 +10,7 @@ export function setupWebSocket(httpServer: Server) {
   const activeUsers = new Map<string, string>(); // userId -> socketId
   const activeCalls = new Map<string, any>(); // callId -> callData
 
-  io.on("connection", (socket) => {
+  io.on("connection", (socket: Socket) => {
     console.log(`User connected: ${socket.id}`);
 
     // Register user
