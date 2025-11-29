@@ -204,3 +204,109 @@ export const insertDuetSchema = createInsertSchema(duets).omit({
 
 export type InsertDuet = z.infer<typeof insertDuetSchema>;
 export type Duet = typeof duets.$inferSelect;
+
+// Stories/Status (24-hour disappearing content)
+export const stories = pgTable("stories", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  content: text("content"),
+  imageUrl: text("image_url"),
+  videoUrl: text("video_url"),
+  views: integer("views").notNull().default(0),
+  expiresAt: timestamp("expires_at").notNull(), // Auto-delete after 24h
+  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+});
+
+export const insertStorySchema = createInsertSchema(stories).omit({
+  id: true,
+  views: true,
+  createdAt: true,
+});
+
+export type InsertStory = z.infer<typeof insertStorySchema>;
+export type Story = typeof stories.$inferSelect;
+
+// Group Chats
+export const groupChats = pgTable("group_chats", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  description: text("description"),
+  profileImage: text("profile_image"),
+  createdBy: varchar("created_by").notNull(),
+  memberCount: integer("member_count").notNull().default(1),
+  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+});
+
+export const insertGroupChatSchema = createInsertSchema(groupChats).omit({
+  id: true,
+  memberCount: true,
+  createdAt: true,
+});
+
+export type InsertGroupChat = z.infer<typeof insertGroupChatSchema>;
+export type GroupChat = typeof groupChats.$inferSelect;
+
+// Group Chat Members
+export const groupChatMembers = pgTable("group_chat_members", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  groupChatId: varchar("group_chat_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  role: text("role").notNull().default("member"), // admin, moderator, member
+  joinedAt: timestamp("joined_at").notNull().default(sql`now()`),
+});
+
+// Group Chat Messages
+export const groupMessages = pgTable("group_messages", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  groupChatId: varchar("group_chat_id").notNull(),
+  senderId: varchar("sender_id").notNull(),
+  content: text("content").notNull(),
+  imageUrl: text("image_url"),
+  voiceUrl: text("voice_url"),
+  voiceDuration: integer("voice_duration"), // seconds
+  isRead: boolean("is_read").notNull().default(false),
+  disappearsAt: timestamp("disappears_at"), // For disappearing messages
+  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+});
+
+export const insertGroupMessageSchema = createInsertSchema(groupMessages).omit({
+  id: true,
+  isRead: true,
+  createdAt: true,
+});
+
+export type InsertGroupMessage = z.infer<typeof insertGroupMessageSchema>;
+export type GroupMessage = typeof groupMessages.$inferSelect;
+
+// Message Reactions (Emojis on messages)
+export const messageReactions = pgTable("message_reactions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  messageId: varchar("message_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  emoji: text("emoji").notNull(), // ❤️, 😂, 🔥, 😢, etc
+  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+});
+
+// Updated Messages Table with voice support
+export const updatedMessages = pgTable("messages_v2", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  senderId: varchar("sender_id").notNull(),
+  recipientId: varchar("recipient_id").notNull(),
+  content: text("content"),
+  imageUrl: text("image_url"),
+  voiceUrl: text("voice_url"),
+  voiceDuration: integer("voice_duration"), // seconds
+  isRead: boolean("is_read").notNull().default(false),
+  disappearsAt: timestamp("disappears_at"), // Snapchat-style disappearing
+  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+});
+
+// Chat Streaks (WhatsApp/Snapchat style)
+export const chatStreaks = pgTable("chat_streaks", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  user1Id: varchar("user1_id").notNull(),
+  user2Id: varchar("user2_id").notNull(),
+  streakCount: integer("streak_count").notNull().default(0),
+  lastMessageDate: timestamp("last_message_date"),
+  startedAt: timestamp("started_at").notNull().default(sql`now()`),
+});

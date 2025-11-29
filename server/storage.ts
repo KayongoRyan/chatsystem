@@ -1,7 +1,7 @@
 import { db } from "./db";
-import { users, posts, comments, reels, messages, postLikes, reelLikes, follows } from "@shared/schema";
-import { type InsertUser, type User, type InsertPost, type Post, type InsertComment, type Comment, type InsertMessage, type Message, type InsertReel, type Reel } from "@shared/schema";
-import { eq, desc, and } from "drizzle-orm";
+import { users, posts, comments, reels, messages, postLikes, reelLikes, follows, stories, groupChats, groupChatMembers, groupMessages, messageReactions, chatStreaks } from "@shared/schema";
+import { type InsertUser, type User, type InsertPost, type Post, type InsertComment, type Comment, type InsertMessage, type Message, type InsertReel, type Reel, type InsertStory, type Story, type InsertGroupChat, type GroupChat, type InsertGroupMessage, type GroupMessage } from "@shared/schema";
+import { eq, desc, and, lt } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -42,6 +42,27 @@ export interface IStorage {
   unfollowUser(followerId: string, followeeId: string): Promise<void>;
   getFollowers(userId: string): Promise<User[]>;
   getFollowing(userId: string): Promise<User[]>;
+
+  // Stories
+  createStory(story: InsertStory): Promise<Story>;
+  getUserStories(userId: string): Promise<Story[]>;
+  getStories(userId: string): Promise<Story[]>;
+  deleteExpiredStories(): Promise<void>;
+
+  // Group Chats
+  createGroupChat(chat: InsertGroupChat): Promise<GroupChat>;
+  getGroupChat(id: string): Promise<GroupChat | undefined>;
+  getUserGroupChats(userId: string): Promise<GroupChat[]>;
+  sendGroupMessage(message: InsertGroupMessage): Promise<GroupMessage>;
+  getGroupMessages(groupChatId: string): Promise<GroupMessage[]>;
+
+  // Message Reactions
+  addReaction(messageId: string, userId: string, emoji: string): Promise<void>;
+  getMessageReactions(messageId: string): Promise<any[]>;
+
+  // Streaks
+  updateStreak(user1Id: string, user2Id: string): Promise<void>;
+  getStreak(user1Id: string, user2Id: string): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {

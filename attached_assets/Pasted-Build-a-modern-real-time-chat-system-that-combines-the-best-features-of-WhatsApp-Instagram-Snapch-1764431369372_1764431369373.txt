@@ -1,0 +1,155 @@
+Build a modern, real-time chat system that combines the best features of WhatsApp, Instagram, Snapchat, and TikTok into a single communication app. The app must be built using React Native for the mobile application, Node.js + Express for the backend, MongoDB for data storage, Firebase for push notifications, and Socket.io for instant messaging.
+
+1. Core Chat Features (WhatsApp inspired)
+
+Real-time 1:1 messaging using Socket.io
+
+Typing indicators (“User is typing…”)
+
+Online/Offline status
+
+Message seen / delivered indicators
+
+Voice messages (record + send)
+
+Image, video, document sharing
+
+End-to-end encryption structure for private chats
+
+2. Social Messaging Features (Instagram inspired)
+
+Create chat groups
+
+Share posts into chat
+
+Watch shared videos inside chat using mini player
+
+User profiles with followers/following
+
+Status/Stories that disappear after 24 hours
+
+Chat reactions (❤️ 😂 🔥 😢 etc.)
+
+Smart link preview for YouTube, TikTok, Spotify
+
+3. Disappearing Snaps (Snapchat inspired)
+
+One-time photos and videos (auto delete after opening)
+
+Screenshot detection & warning
+
+Camera with filters, stickers, and face effects
+
+Streak system (🔥 consecutive days chatting)
+
+Bitmoji-style avatar or profile tags
+
+4. Short Video Chat Feed (TikTok inspired)
+
+Vertical video feed inside chat
+
+Auto-play short videos
+
+Users can send TikTok-style clips inside chat
+
+Swipe up/down to view more videos
+
+Music integration for video replies
+
+Duet/Reactions to messages using short videos
+
+5. Chat UI Requirements
+
+Smooth, modern, minimal UI
+
+Light mode + Dark mode
+
+Tidal-style black/white theme option
+
+Rounded message bubbles
+
+Floating action button to start new chat
+
+Search bar with recent chats, groups, top friends
+
+Swipe left on message to reply
+
+Long press to delete, forward, copy
+
+6. User System
+
+Phone number login
+
+Email + password login
+
+Google sign-in
+
+2-step verification via OTP
+
+Real-time presence tracking
+
+Profile editing (name, bio, profile picture)
+
+Block/report system
+
+7. Notifications
+
+Firebase Cloud Messaging
+
+Message notifications
+
+Story notifications
+
+Mentions/tag notifications
+
+Reactions notifications
+
+8. Media Storage
+
+Upload images, videos, audio to Firebase Storage
+
+File compression for faster uploads
+
+Auto-clean old media
+
+9. Security
+
+Token-based authentication (JWT)
+
+Password hashing with bcrypt
+
+Encrypted messages
+
+Suspicious login alerts
+
+10. Bonus Features
+
+Translate messages instantly
+
+Voice-to-text in chat
+
+In chat music player for audio clips
+
+Advanced search for messages/media
+
+Smart AI reply suggestions
+
+Emojis + GIFs + Stickers system
+
+📌 Deliverables the AI Should Generate
+
+React Native screens (Chat screen, Camera, Stories, Feed, Calls, Login)
+
+Backend API routes (auth, messages, chats, stories, media)
+
+Database schemas for Users, Chats, Messages, Stories, Reels
+
+Socket.io real-time functions
+
+Reusable components (message bubble, story bubble, camera UI)
+
+Example UI layout in clean black & white theme
+
+Testing plan for errors & debugging
+
+A clear folder structure for full scalability

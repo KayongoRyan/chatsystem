@@ -132,7 +132,7 @@ export default function DiscoverPage() {
                         <Share2 className="w-4 h-4" /> {reel.shares}
                       </span>
                     </div>
-                    <Button size="sm" variant="primary" className="w-full">
+                    <Button size="sm" className="w-full">
                       Watch Now
                     </Button>
                   </div>
