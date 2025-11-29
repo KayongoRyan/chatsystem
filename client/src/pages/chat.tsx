@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Sidebar } from '@/components/chat/Sidebar';
 import { ChatArea } from '@/components/chat/ChatArea';
 import { INITIAL_CHATS, Chat, CURRENT_USER } from '@/lib/mock-data';
@@ -11,9 +11,13 @@ export default function ChatPage() {
 
   const selectedChat = chats.find(c => c.id === selectedChatId);
 
-  const handleSendMessage = (content: string) => {
+  const handleSendMessage = useCallback(async (content: string) => {
     if (!selectedChatId) return;
 
+    const recipientId = selectedChat?.participants[0].id;
+    if (!recipientId) return;
+
+    // Optimistically add message to UI
     const newMessage = {
       id: `m-${Date.now()}`,
       senderId: CURRENT_USER.id,
@@ -31,6 +35,21 @@ export default function ChatPage() {
       }
       return chat;
     }));
+
+    // Send to API
+    try {
+      const response = await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recipientId, content })
+      });
+      
+      if (!response.ok) {
+        toast({ title: "Error", description: "Failed to send message", variant: "destructive" });
+      }
+    } catch (error) {
+      toast({ title: "Error", description: "Network error", variant: "destructive" });
+    }
 
     // Simulate reply
     setTimeout(() => {
@@ -58,7 +77,7 @@ export default function ChatPage() {
          }));
       }, 2000);
     }, 1000);
-  };
+  }, [selectedChatId, selectedChat, toast]);
 
   return (
     <div className="flex h-screen overflow-hidden bg-background text-foreground font-sans">

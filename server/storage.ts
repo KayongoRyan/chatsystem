@@ -253,6 +253,84 @@ export class DatabaseStorage implements IStorage {
     );
     return followingUsers.filter((u: User | undefined): u is User => u !== undefined);
   }
+
+  // Stories
+  async createStory(story: InsertStory): Promise<Story> {
+    const result = await db.insert(stories).values(story).returning();
+    return result[0];
+  }
+
+  async getUserStories(userId: string): Promise<Story[]> {
+    return await db.select().from(stories).where(eq(stories.userId, userId)).orderBy(desc(stories.createdAt));
+  }
+
+  async getStories(userId: string): Promise<Story[]> {
+    return await db.select().from(stories).orderBy(desc(stories.createdAt));
+  }
+
+  async deleteExpiredStories(): Promise<void> {
+    await db.delete(stories).where(lt(stories.expiresAt, new Date()));
+  }
+
+  // Group Chats
+  async createGroupChat(chat: InsertGroupChat): Promise<GroupChat> {
+    const result = await db.insert(groupChats).values(chat).returning();
+    return result[0];
+  }
+
+  async getGroupChat(id: string): Promise<GroupChat | undefined> {
+    const result = await db.select().from(groupChats).where(eq(groupChats.id, id)).limit(1);
+    return result[0];
+  }
+
+  async getUserGroupChats(userId: string): Promise<GroupChat[]> {
+    const memberChats = await db.select({ groupChatId: groupChatMembers.groupChatId }).from(groupChatMembers).where(eq(groupChatMembers.userId, userId));
+    const chats = await Promise.all(
+      memberChats.map(m => this.getGroupChat(m.groupChatId))
+    );
+    return chats.filter((c): c is GroupChat => c !== undefined);
+  }
+
+  async sendGroupMessage(message: InsertGroupMessage): Promise<GroupMessage> {
+    const result = await db.insert(groupMessages).values(message).returning();
+    return result[0];
+  }
+
+  async getGroupMessages(groupChatId: string): Promise<GroupMessage[]> {
+    return await db.select().from(groupMessages).where(eq(groupMessages.groupChatId, groupChatId)).orderBy(groupMessages.createdAt);
+  }
+
+  // Message Reactions
+  async addReaction(messageId: string, userId: string, emoji: string): Promise<void> {
+    await db.insert(messageReactions).values({ messageId, userId, emoji });
+  }
+
+  async getMessageReactions(messageId: string): Promise<any[]> {
+    return await db.select().from(messageReactions).where(eq(messageReactions.messageId, messageId));
+  }
+
+  // Streaks
+  async updateStreak(user1Id: string, user2Id: string): Promise<void> {
+    const existing = await db.select().from(chatStreaks).where(
+      and(eq(chatStreaks.user1Id, user1Id), eq(chatStreaks.user2Id, user2Id))
+    ).limit(1);
+    
+    if (existing[0]) {
+      await db.update(chatStreaks).set({ 
+        streakCount: existing[0].streakCount + 1,
+        lastMessageDate: new Date()
+      }).where(eq(chatStreaks.id, existing[0].id));
+    } else {
+      await db.insert(chatStreaks).values({ user1Id, user2Id, streakCount: 1, lastMessageDate: new Date() });
+    }
+  }
+
+  async getStreak(user1Id: string, user2Id: string): Promise<any> {
+    const result = await db.select().from(chatStreaks).where(
+      and(eq(chatStreaks.user1Id, user1Id), eq(chatStreaks.user2Id, user2Id))
+    ).limit(1);
+    return result[0];
+  }
 }
 
 export const storage = new DatabaseStorage();
