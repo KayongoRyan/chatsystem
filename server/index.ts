@@ -1,11 +1,41 @@
+import "./load-env";
 import express, { type Request, Response, NextFunction } from "express";
+import session from "express-session";
+import createMemoryStore from "memorystore";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { setupWebSocket } from "./websocket";
 import { createServer } from "http";
 
+declare module "express-session" {
+  interface SessionData {
+    userId?: string;
+  }
+}
+
 const app = express();
 const httpServer = createServer(app);
+
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
+
+const MemoryStore = createMemoryStore(session);
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "pulse-dev-session-change-me",
+    name: "pulse.sid",
+    resave: false,
+    saveUninitialized: false,
+    store: new MemoryStore({ checkPeriod: 86_400_000 }),
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: "lax",
+    },
+  }),
+);
 
 // Setup WebSocket for real-time calling
 setupWebSocket(httpServer);
@@ -89,14 +119,7 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || "5000", 10);
-  httpServer.listen(
-    {
-      port,
-      host: "0.0.0.0",
-      reusePort: true,
-    },
-    () => {
-      log(`serving on port ${port}`);
-    },
-  );
+  httpServer.listen(port, "0.0.0.0", () => {
+    log(`serving on port ${port}`);
+  });
 })();

@@ -6,7 +6,7 @@ import { rm, readFile } from "fs/promises";
 // which helps cold start times
 const allowlist = [
   "@google/generative-ai",
-  "@neondatabase/serverless",
+  "mysql2",
   "axios",
   "connect-pg-simple",
   "cors",

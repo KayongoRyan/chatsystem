@@ -13,7 +13,9 @@ export default function HomePage() {
     // Fetch posts from API
     const fetchPosts = async () => {
       try {
-        const response = await fetch('/api/posts?limit=10');
+        const response = await fetch('/api/posts?limit=10', {
+          credentials: 'include',
+        });
         if (response.ok) {
           const data = await response.json();
           setPosts(data);

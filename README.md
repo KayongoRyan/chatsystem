@@ -54,15 +54,31 @@ A modern, full-featured social media application built with React, Vite, and Tai
 npm install
 ```
 
+### Environment
+
+Copy `.env.example` to `.env` in the **project root** (`chatsystem/.env`) and set:
+
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `DATABASE_URL` | Yes (full stack) | **MySQL** connection URI, e.g. `mysql://user:password@127.0.0.1:3306/chatsystem` — create a database, then run `npm run db:push` |
+| `SESSION_SECRET` | **Production** | Secret for signed session cookies (use a long random string) |
+| `SITE_URL` | Optional | Production origin for Open Graph image URLs at build time |
+
 ### Development
 
-Start the Vite dev server:
+**Client only** (Vite; API calls need the server running separately):
 
 ```bash
 npm run dev:client
 ```
 
-The app will be available at `http://localhost:5000`
+**Full stack** (Express + API + Vite HMR on one port — recommended for auth and DB):
+
+```bash
+npm run dev
+```
+
+The app is available at `http://localhost:5000` (or `PORT` if set).
 
 ### Production Build
 

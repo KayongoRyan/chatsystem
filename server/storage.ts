@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { db } from "./db";
 import { users, posts, comments, reels, messages, postLikes, reelLikes, follows, stories, groupChats, groupChatMembers, groupMessages, messageReactions, chatStreaks } from "@shared/schema";
 import { type InsertUser, type User, type InsertPost, type Post, type InsertComment, type Comment, type InsertMessage, type Message, type InsertReel, type Reel, type InsertStory, type Story, type InsertGroupChat, type GroupChat, type InsertGroupMessage, type GroupMessage } from "@shared/schema";
@@ -78,13 +79,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(user: InsertUser): Promise<User> {
-    const result = await db.insert(users).values(user).returning();
-    return result[0];
+    const id = randomUUID();
+    await db.insert(users).values({ ...user, id });
+    const row = await this.getUser(id);
+    if (!row) throw new Error("Failed to create user");
+    return row;
   }
 
   async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
-    const result = await db.update(users).set(updates).where(eq(users.id, id)).returning();
-    return result[0];
+    await db.update(users).set(updates).where(eq(users.id, id));
+    return this.getUser(id);
   }
 
   async getAllUsers(): Promise<User[]> {
@@ -111,8 +115,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createPost(post: InsertPost): Promise<Post> {
-    const result = await db.insert(posts).values(post).returning();
-    return result[0];
+    const id = randomUUID();
+    await db.insert(posts).values({ ...post, id });
+    const [row] = await db.select().from(posts).where(eq(posts.id, id)).limit(1);
+    if (!row) throw new Error("Failed to create post");
+    return row;
   }
 
   async deletePost(id: string): Promise<void> {
@@ -141,8 +148,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createComment(comment: InsertComment): Promise<Comment> {
-    const result = await db.insert(comments).values(comment).returning();
-    return result[0];
+    const id = randomUUID();
+    await db.insert(comments).values({ ...comment, id });
+    const [row] = await db.select().from(comments).where(eq(comments.id, id)).limit(1);
+    if (!row) throw new Error("Failed to create comment");
+    return row;
   }
 
   async deleteComment(id: string): Promise<void> {
@@ -155,8 +165,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createReel(reel: InsertReel): Promise<Reel> {
-    const result = await db.insert(reels).values(reel).returning();
-    return result[0];
+    const id = randomUUID();
+    await db.insert(reels).values({ ...reel, id });
+    const [row] = await db.select().from(reels).where(eq(reels.id, id)).limit(1);
+    if (!row) throw new Error("Failed to create reel");
+    return row;
   }
 
   async deleteReel(id: string): Promise<void> {
@@ -205,8 +218,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async sendMessage(message: InsertMessage): Promise<Message> {
-    const result = await db.insert(messages).values(message).returning();
-    return result[0];
+    const id = randomUUID();
+    await db.insert(messages).values({ ...message, id });
+    const [row] = await db.select().from(messages).where(eq(messages.id, id)).limit(1);
+    if (!row) throw new Error("Failed to send message");
+    return row;
   }
 
   async markAsRead(messageId: string): Promise<void> {
@@ -256,8 +272,11 @@ export class DatabaseStorage implements IStorage {
 
   // Stories
   async createStory(story: InsertStory): Promise<Story> {
-    const result = await db.insert(stories).values(story).returning();
-    return result[0];
+    const id = randomUUID();
+    await db.insert(stories).values({ ...story, id });
+    const [row] = await db.select().from(stories).where(eq(stories.id, id)).limit(1);
+    if (!row) throw new Error("Failed to create story");
+    return row;
   }
 
   async getUserStories(userId: string): Promise<Story[]> {
@@ -274,8 +293,11 @@ export class DatabaseStorage implements IStorage {
 
   // Group Chats
   async createGroupChat(chat: InsertGroupChat): Promise<GroupChat> {
-    const result = await db.insert(groupChats).values(chat).returning();
-    return result[0];
+    const id = randomUUID();
+    await db.insert(groupChats).values({ ...chat, id });
+    const [row] = await db.select().from(groupChats).where(eq(groupChats.id, id)).limit(1);
+    if (!row) throw new Error("Failed to create group chat");
+    return row;
   }
 
   async getGroupChat(id: string): Promise<GroupChat | undefined> {
@@ -292,8 +314,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async sendGroupMessage(message: InsertGroupMessage): Promise<GroupMessage> {
-    const result = await db.insert(groupMessages).values(message).returning();
-    return result[0];
+    const id = randomUUID();
+    await db.insert(groupMessages).values({ ...message, id });
+    const [row] = await db.select().from(groupMessages).where(eq(groupMessages.id, id)).limit(1);
+    if (!row) throw new Error("Failed to send group message");
+    return row;
   }
 
   async getGroupMessages(groupChatId: string): Promise<GroupMessage[]> {

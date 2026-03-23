@@ -38,6 +38,7 @@ export function setupWebSocket(httpServer: Server) {
       const callData = activeCalls.get(data.callId);
       if (callData) {
         const callerSocketId = activeUsers.get(callData.caller);
+        if (!callerSocketId) return;
         io.to(callerSocketId).emit("call:answered", {
           callId: data.callId,
           answer: data.answer,

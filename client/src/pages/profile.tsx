@@ -14,7 +14,9 @@ export default function ProfilePage() {
     // Fetch user's posts from API
     const fetchUserPosts = async () => {
       try {
-        const response = await fetch(`/api/users/${CURRENT_USER.id}/posts`);
+        const response = await fetch(`/api/users/${CURRENT_USER.id}/posts`, {
+          credentials: 'include',
+        });
         if (response.ok) {
           const data = await response.json();
           setUserPosts(data);

@@ -3,14 +3,6 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertUserSchema, insertPostSchema, insertReelSchema, insertMessageSchema, insertCommentSchema, insertCallSessionSchema } from "@shared/schema";
 
-declare global {
-  namespace Express {
-    interface Request {
-      session: any;
-    }
-  }
-}
-
 export async function registerRoutes(
   httpServer: Server,
   app: Express

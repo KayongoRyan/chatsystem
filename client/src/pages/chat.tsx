@@ -45,7 +45,8 @@ export default function ChatPage() {
       const response = await fetch('/api/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ recipientId, content })
+        body: JSON.stringify({ recipientId, content }),
+        credentials: 'include',
       });
       
       if (!response.ok) {

@@ -1,19 +1,27 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, integer, timestamp, boolean, jsonb } from "drizzle-orm/pg-core";
+import {
+  mysqlTable,
+  varchar,
+  text,
+  int,
+  timestamp,
+  datetime,
+  boolean,
+} from "drizzle-orm/mysql-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Users Table
-export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  username: text("username").notNull().unique(),
-  name: text("name").notNull(),
+export const users = mysqlTable("users", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+  username: varchar("username", { length: 255 }).notNull().unique(),
+  name: varchar("name", { length: 255 }).notNull(),
   password: text("password").notNull(),
   avatar: text("avatar").notNull(),
   bio: text("bio"),
-  followers: integer("followers").notNull().default(0),
-  following: integer("following").notNull().default(0),
-  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+  followers: int("followers").notNull().default(0),
+  following: int("following").notNull().default(0),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
 });
 
 export const insertUserSchema = createInsertSchema(users).omit({
@@ -27,14 +35,14 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 
 // Posts Table
-export const posts = pgTable("posts", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull(),
+export const posts = mysqlTable("posts", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+  userId: varchar("user_id", { length: 36 }).notNull(),
   imageUrl: text("image_url").notNull(),
   caption: text("caption"),
-  likes: integer("likes").notNull().default(0),
+  likes: int("likes").notNull().default(0),
   location: text("location"),
-  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
 });
 
 export const insertPostSchema = createInsertSchema(posts).omit({
@@ -47,13 +55,13 @@ export type InsertPost = z.infer<typeof insertPostSchema>;
 export type Post = typeof posts.$inferSelect;
 
 // Comments Table
-export const comments = pgTable("comments", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  postId: varchar("post_id").notNull(),
-  userId: varchar("user_id").notNull(),
+export const comments = mysqlTable("comments", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+  postId: varchar("post_id", { length: 36 }).notNull(),
+  userId: varchar("user_id", { length: 36 }).notNull(),
   content: text("content").notNull(),
-  likes: integer("likes").notNull().default(0),
-  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+  likes: int("likes").notNull().default(0),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
 });
 
 export const insertCommentSchema = createInsertSchema(comments).omit({
@@ -66,17 +74,17 @@ export type InsertComment = z.infer<typeof insertCommentSchema>;
 export type Comment = typeof comments.$inferSelect;
 
 // Reels Table
-export const reels = pgTable("reels", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull(),
+export const reels = mysqlTable("reels", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+  userId: varchar("user_id", { length: 36 }).notNull(),
   videoUrl: text("video_url").notNull(),
   caption: text("caption"),
-  likes: integer("likes").notNull().default(0),
-  comments: integer("comments").notNull().default(0),
-  shares: integer("shares").notNull().default(0),
+  likes: int("likes").notNull().default(0),
+  comments: int("comments").notNull().default(0),
+  shares: int("shares").notNull().default(0),
   musicTrack: text("music_track"),
   isViralContent: boolean("is_viral_content").notNull().default(false),
-  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
 });
 
 export const insertReelSchema = createInsertSchema(reels).omit({
@@ -92,14 +100,14 @@ export type InsertReel = z.infer<typeof insertReelSchema>;
 export type Reel = typeof reels.$inferSelect;
 
 // Messages Table
-export const messages = pgTable("messages", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  senderId: varchar("sender_id").notNull(),
-  recipientId: varchar("recipient_id").notNull(),
+export const messages = mysqlTable("messages", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+  senderId: varchar("sender_id", { length: 36 }).notNull(),
+  recipientId: varchar("recipient_id", { length: 36 }).notNull(),
   content: text("content").notNull(),
   imageUrl: text("image_url"),
   isRead: boolean("is_read").notNull().default(false),
-  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
 });
 
 export const insertMessageSchema = createInsertSchema(messages).omit({
@@ -112,42 +120,40 @@ export type InsertMessage = z.infer<typeof insertMessageSchema>;
 export type Message = typeof messages.$inferSelect;
 
 // Post Likes Table
-export const postLikes = pgTable("post_likes", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  postId: varchar("post_id").notNull(),
-  userId: varchar("user_id").notNull(),
-  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+export const postLikes = mysqlTable("post_likes", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+  postId: varchar("post_id", { length: 36 }).notNull(),
+  userId: varchar("user_id", { length: 36 }).notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
 });
 
 // Reel Likes Table
-export const reelLikes = pgTable("reel_likes", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  reelId: varchar("reel_id").notNull(),
-  userId: varchar("user_id").notNull(),
-  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+export const reelLikes = mysqlTable("reel_likes", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+  reelId: varchar("reel_id", { length: 36 }).notNull(),
+  userId: varchar("user_id", { length: 36 }).notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
 });
 
 // Follow Relationships
-export const follows = pgTable("follows", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  followerId: varchar("follower_id").notNull(),
-  followeeId: varchar("followee_id").notNull(),
-  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+export const follows = mysqlTable("follows", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+  followerId: varchar("follower_id", { length: 36 }).notNull(),
+  followeeId: varchar("followee_id", { length: 36 }).notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
 });
 
-// TikTok-inspired Features
-
 // Sounds/Music Library
-export const sounds = pgTable("sounds", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  title: text("title").notNull(),
+export const sounds = mysqlTable("sounds", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+  title: varchar("title", { length: 512 }).notNull(),
   artist: text("artist"),
   audioUrl: text("audio_url").notNull(),
-  duration: integer("duration"), // seconds
-  uses: integer("uses").notNull().default(0), // How many videos use this sound
-  createdBy: varchar("created_by"), // User ID who uploaded it
+  duration: int("duration"),
+  uses: int("uses").notNull().default(0),
+  createdBy: varchar("created_by", { length: 36 }),
   isTrending: boolean("is_trending").notNull().default(false),
-  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
 });
 
 export const insertSoundSchema = createInsertSchema(sounds).omit({
@@ -161,17 +167,17 @@ export type InsertSound = z.infer<typeof insertSoundSchema>;
 export type Sound = typeof sounds.$inferSelect;
 
 // Challenges/Trends
-export const challenges = pgTable("challenges", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  title: text("title").notNull(),
+export const challenges = mysqlTable("challenges", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+  title: varchar("title", { length: 512 }).notNull(),
   description: text("description"),
-  hashtag: text("hashtag").notNull().unique(),
+  hashtag: varchar("hashtag", { length: 255 }).notNull().unique(),
   coverImage: text("cover_image"),
-  soundId: varchar("sound_id"), // Associated sound
-  participationCount: integer("participation_count").notNull().default(0),
-  views: integer("views").notNull().default(0),
+  soundId: varchar("sound_id", { length: 36 }),
+  participationCount: int("participation_count").notNull().default(0),
+  views: int("views").notNull().default(0),
   isFeatured: boolean("is_featured").notNull().default(false),
-  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
 });
 
 export const insertChallengeSchema = createInsertSchema(challenges).omit({
@@ -185,15 +191,15 @@ export const insertChallengeSchema = createInsertSchema(challenges).omit({
 export type InsertChallenge = z.infer<typeof insertChallengeSchema>;
 export type Challenge = typeof challenges.$inferSelect;
 
-// Duets (Videos created with other users)
-export const duets = pgTable("duets", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  creatorId: varchar("creator_id").notNull(),
-  originalReelId: varchar("original_reel_id").notNull(),
+// Duets
+export const duets = mysqlTable("duets", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+  creatorId: varchar("creator_id", { length: 36 }).notNull(),
+  originalReelId: varchar("original_reel_id", { length: 36 }).notNull(),
   duetVideoUrl: text("duet_video_url").notNull(),
   caption: text("caption"),
-  likes: integer("likes").notNull().default(0),
-  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+  likes: int("likes").notNull().default(0),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
 });
 
 export const insertDuetSchema = createInsertSchema(duets).omit({
@@ -205,16 +211,16 @@ export const insertDuetSchema = createInsertSchema(duets).omit({
 export type InsertDuet = z.infer<typeof insertDuetSchema>;
 export type Duet = typeof duets.$inferSelect;
 
-// Stories/Status (24-hour disappearing content)
-export const stories = pgTable("stories", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull(),
+// Stories
+export const stories = mysqlTable("stories", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+  userId: varchar("user_id", { length: 36 }).notNull(),
   content: text("content"),
   imageUrl: text("image_url"),
   videoUrl: text("video_url"),
-  views: integer("views").notNull().default(0),
-  expiresAt: timestamp("expires_at").notNull(), // Auto-delete after 24h
-  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+  views: int("views").notNull().default(0),
+  expiresAt: timestamp("expires_at", { mode: "date" }).notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
 });
 
 export const insertStorySchema = createInsertSchema(stories).omit({
@@ -227,14 +233,14 @@ export type InsertStory = z.infer<typeof insertStorySchema>;
 export type Story = typeof stories.$inferSelect;
 
 // Group Chats
-export const groupChats = pgTable("group_chats", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  name: text("name").notNull(),
+export const groupChats = mysqlTable("group_chats", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+  name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
   profileImage: text("profile_image"),
-  createdBy: varchar("created_by").notNull(),
-  memberCount: integer("member_count").notNull().default(1),
-  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+  createdBy: varchar("created_by", { length: 36 }).notNull(),
+  memberCount: int("member_count").notNull().default(1),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
 });
 
 export const insertGroupChatSchema = createInsertSchema(groupChats).omit({
@@ -247,26 +253,27 @@ export type InsertGroupChat = z.infer<typeof insertGroupChatSchema>;
 export type GroupChat = typeof groupChats.$inferSelect;
 
 // Group Chat Members
-export const groupChatMembers = pgTable("group_chat_members", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  groupChatId: varchar("group_chat_id").notNull(),
-  userId: varchar("user_id").notNull(),
-  role: text("role").notNull().default("member"), // admin, moderator, member
-  joinedAt: timestamp("joined_at").notNull().default(sql`now()`),
+export const groupChatMembers = mysqlTable("group_chat_members", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+  groupChatId: varchar("group_chat_id", { length: 36 }).notNull(),
+  userId: varchar("user_id", { length: 36 }).notNull(),
+  role: varchar("role", { length: 32 }).notNull().default("member"),
+  joinedAt: timestamp("joined_at", { mode: "date" }).notNull().defaultNow(),
 });
 
 // Group Chat Messages
-export const groupMessages = pgTable("group_messages", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  groupChatId: varchar("group_chat_id").notNull(),
-  senderId: varchar("sender_id").notNull(),
+export const groupMessages = mysqlTable("group_messages", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+  groupChatId: varchar("group_chat_id", { length: 36 }).notNull(),
+  senderId: varchar("sender_id", { length: 36 }).notNull(),
   content: text("content").notNull(),
   imageUrl: text("image_url"),
   voiceUrl: text("voice_url"),
-  voiceDuration: integer("voice_duration"), // seconds
+  voiceDuration: int("voice_duration"),
   isRead: boolean("is_read").notNull().default(false),
-  disappearsAt: timestamp("disappears_at"), // For disappearing messages
-  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+  // datetime (not timestamp) for nullable — avoids MariaDB ER_INVALID_DEFAULT on nullable TIMESTAMP
+  disappearsAt: datetime("disappears_at", { mode: "date" }),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
 });
 
 export const insertGroupMessageSchema = createInsertSchema(groupMessages).omit({
@@ -278,49 +285,49 @@ export const insertGroupMessageSchema = createInsertSchema(groupMessages).omit({
 export type InsertGroupMessage = z.infer<typeof insertGroupMessageSchema>;
 export type GroupMessage = typeof groupMessages.$inferSelect;
 
-// Message Reactions (Emojis on messages)
-export const messageReactions = pgTable("message_reactions", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  messageId: varchar("message_id").notNull(),
-  userId: varchar("user_id").notNull(),
-  emoji: text("emoji").notNull(), // ❤️, 😂, 🔥, 😢, etc
-  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+// Message Reactions
+export const messageReactions = mysqlTable("message_reactions", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+  messageId: varchar("message_id", { length: 36 }).notNull(),
+  userId: varchar("user_id", { length: 36 }).notNull(),
+  emoji: varchar("emoji", { length: 32 }).notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
 });
 
-// Updated Messages Table with voice support
-export const updatedMessages = pgTable("messages_v2", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  senderId: varchar("sender_id").notNull(),
-  recipientId: varchar("recipient_id").notNull(),
+// messages_v2 (legacy table name kept)
+export const updatedMessages = mysqlTable("messages_v2", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+  senderId: varchar("sender_id", { length: 36 }).notNull(),
+  recipientId: varchar("recipient_id", { length: 36 }).notNull(),
   content: text("content"),
   imageUrl: text("image_url"),
   voiceUrl: text("voice_url"),
-  voiceDuration: integer("voice_duration"), // seconds
+  voiceDuration: int("voice_duration"),
   isRead: boolean("is_read").notNull().default(false),
-  disappearsAt: timestamp("disappears_at"), // Snapchat-style disappearing
-  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+  disappearsAt: datetime("disappears_at", { mode: "date" }),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
 });
 
-// Chat Streaks (WhatsApp/Snapchat style)
-export const chatStreaks = pgTable("chat_streaks", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  user1Id: varchar("user1_id").notNull(),
-  user2Id: varchar("user2_id").notNull(),
-  streakCount: integer("streak_count").notNull().default(0),
-  lastMessageDate: timestamp("last_message_date"),
-  startedAt: timestamp("started_at").notNull().default(sql`now()`),
+// Chat Streaks
+export const chatStreaks = mysqlTable("chat_streaks", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+  user1Id: varchar("user1_id", { length: 36 }).notNull(),
+  user2Id: varchar("user2_id", { length: 36 }).notNull(),
+  streakCount: int("streak_count").notNull().default(0),
+  lastMessageDate: datetime("last_message_date", { mode: "date" }),
+  startedAt: timestamp("started_at", { mode: "date" }).notNull().defaultNow(),
 });
 
-// Call Sessions (Real-time video/audio calling)
-export const callSessions = pgTable("call_sessions", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  callerId: varchar("caller_id").notNull(),
-  recipientId: varchar("recipient_id").notNull(),
-  status: text("status").notNull().default("ringing"), // ringing, active, ended
-  callType: text("call_type").notNull().default("audio"), // audio, video
-  duration: integer("duration"), // seconds
-  startedAt: timestamp("started_at").notNull().default(sql`now()`),
-  endedAt: timestamp("ended_at"),
+// Call Sessions
+export const callSessions = mysqlTable("call_sessions", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+  callerId: varchar("caller_id", { length: 36 }).notNull(),
+  recipientId: varchar("recipient_id", { length: 36 }).notNull(),
+  status: varchar("status", { length: 32 }).notNull().default("ringing"),
+  callType: varchar("call_type", { length: 32 }).notNull().default("audio"),
+  duration: int("duration"),
+  startedAt: timestamp("started_at", { mode: "date" }).notNull().defaultNow(),
+  endedAt: datetime("ended_at", { mode: "date" }),
 });
 
 export const insertCallSessionSchema = createInsertSchema(callSessions).omit({
