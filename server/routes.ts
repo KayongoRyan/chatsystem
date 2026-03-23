@@ -63,6 +63,38 @@ export async function registerRoutes(
     res.json(users);
   });
 
+  // Search — filter users and posts by query (no auth required for discovery)
+  app.get("/api/search", async (req, res) => {
+    const q = String(req.query.q || "")
+      .trim()
+      .toLowerCase();
+    if (!q) {
+      return res.json({ users: [], posts: [], query: "" });
+    }
+
+    const allUsers = await storage.getAllUsers();
+    const matchedUsers = allUsers
+      .filter(
+        (u) =>
+          u.username.toLowerCase().includes(q) ||
+          (u.name?.toLowerCase().includes(q) ?? false) ||
+          (u.bio?.toLowerCase().includes(q) ?? false),
+      )
+      .slice(0, 24)
+      .map(({ password: _pw, ...safe }) => safe);
+
+    const allPosts = await storage.getPosts(100);
+    const matchedPosts = allPosts
+      .filter(
+        (p) =>
+          (p.caption?.toLowerCase().includes(q) ?? false) ||
+          (p.location?.toLowerCase().includes(q) ?? false),
+      )
+      .slice(0, 36);
+
+    res.json({ users: matchedUsers, posts: matchedPosts, query: q });
+  });
+
   // Posts Routes
   app.get("/api/posts", async (req, res) => {
     const limit = parseInt(req.query.limit as string) || 10;

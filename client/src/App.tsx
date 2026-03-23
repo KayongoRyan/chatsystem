@@ -13,6 +13,7 @@ import SoundsPage from "@/pages/sounds";
 import TrendsPage from "@/pages/trends";
 import ProfilePage from "@/pages/profile";
 import SettingsPage from "@/pages/settings";
+import SearchPage from "@/pages/search";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -27,7 +28,7 @@ function Router() {
         <Route path="/trends" component={TrendsPage} />
         <Route path="/profile" component={ProfilePage} />
         <Route path="/settings" component={SettingsPage} />
-        <Route path="/search" component={HomePage} />
+        <Route path="/search" component={SearchPage} />
         <Route component={NotFound} />
       </Switch>
     </AppLayout>
