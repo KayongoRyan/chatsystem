@@ -163,47 +163,84 @@ export const INITIAL_CHATS: Chat[] = USERS.map(user => ({
   unreadCount: Math.random() > 0.7 ? Math.floor(Math.random() * 3) + 1 : 0,
 }));
 
+/**
+ * High-res square crops (1080×1080) from Unsplash — use for feed preview when the DB is empty
+ * so the home layout always shows how real photo posts will look.
+ */
+const unsplashSquare = (photoId: string, params?: string) =>
+  `https://images.unsplash.com/${photoId}?auto=format&fit=crop&w=1080&h=1080&q=90${params ? `&${params}` : ""}`;
+
 export const POSTS: Post[] = [
   {
     id: 'p1',
     userId: 'u1',
-    imageUrl: 'https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=800&auto=format&fit=crop&q=60',
-    caption: 'Chasing sunsets in Bali 🌅 #travel #wanderlust',
+    imageUrl: unsplashSquare('photo-1507525428034-b723cf961d3e'),
+    caption: 'Golden hour at the coast — nothing beats this light 🌅 #travel #ocean',
     likes: 1243,
     comments: [],
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
-    location: 'Bali, Indonesia'
+    timestamp: new Date(Date.now() - 1000 * 60 * 45),
+    location: 'Malibu, CA'
   },
   {
     id: 'p2',
     userId: 'u3',
-    imageUrl: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=800&auto=format&fit=crop&q=60',
-    caption: 'New piece in progress. Acrylic on canvas. 🎨',
-    likes: 892,
+    imageUrl: unsplashSquare('photo-1549880338-65ddcdfd9b0e'),
+    caption: 'Peaks above the clouds. Worth every step ⛰️',
+    likes: 2104,
     comments: [],
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5),
-    location: 'Brooklyn Art Studio'
+    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 3),
+    location: 'Swiss Alps'
   },
   {
     id: 'p3',
     userId: 'u2',
-    imageUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&auto=format&fit=crop&q=60',
-    caption: 'Late night coding session. The flow is real. 💻',
-    likes: 456,
+    imageUrl: unsplashSquare('photo-1498050108023-c5249f4df085'),
+    caption: 'Shipping features tonight. Dark mode + coffee = flow state 💻',
+    likes: 892,
     comments: [],
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 12),
+    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6),
+    location: 'Home office'
   },
   {
     id: 'p4',
-    userId: 'u1',
-    imageUrl: 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=800&auto=format&fit=crop&q=60',
-    caption: 'Cinque Terre vibes 🇮🇹',
-    likes: 2341,
+    userId: 'u4',
+    imageUrl: unsplashSquare('photo-1514565131-fce0801e5785'),
+    caption: 'City lights never get old 🌃',
+    likes: 3421,
     comments: [],
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
-    location: 'Cinque Terre, Italy'
+    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 14),
+    location: 'Tokyo'
+  },
+  {
+    id: 'p5',
+    userId: 'u1',
+    imageUrl: unsplashSquare('photo-1540189549336-e6a99b367936'),
+    caption: 'Brunch spread with the crew 🥗',
+    likes: 756,
+    comments: [],
+    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 22),
+    location: 'SoHo, NYC'
+  },
+  {
+    id: 'p6',
+    userId: 'u3',
+    imageUrl: unsplashSquare('photo-1579783902614-a3fb3927b6a5'),
+    caption: 'Fresh strokes on the easel — work in progress 🎨',
+    likes: 1532,
+    comments: [],
+    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 30),
+    location: 'Studio'
   }
 ];
+
+/** Same posts with fresh timestamps (for preview mode) */
+export function getPreviewFeedPosts(): Post[] {
+  const offsets = [0.5, 2, 5, 12, 20, 36].map((h) => 1000 * 60 * 60 * h);
+  return POSTS.map((p, i) => ({
+    ...p,
+    timestamp: new Date(Date.now() - (offsets[i] ?? offsets[0]))
+  }));
+}
 
 // Using placeholder videos or images that look like video thumbnails for reels mock
 export const REELS: Reel[] = [

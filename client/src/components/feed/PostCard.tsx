@@ -10,15 +10,23 @@ interface PostCardProps {
   post: Post;
 }
 
+function postTimestamp(post: Post): Date {
+  const p = post as Post & { createdAt?: Date | string };
+  if (post.timestamp) return post.timestamp instanceof Date ? post.timestamp : new Date(post.timestamp);
+  if (p.createdAt) return p.createdAt instanceof Date ? p.createdAt : new Date(p.createdAt);
+  return new Date();
+}
+
 export function PostCard({ post }: PostCardProps) {
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const user = USERS.find(u => u.id === post.userId) || USERS[0];
+  const at = postTimestamp(post);
 
   return (
-    <article className="w-full max-w-[470px] mx-auto border-b border-border pb-4 mb-4 md:border md:rounded-xl md:shadow-sm md:bg-card md:pb-0">
+    <article className="w-full max-w-[470px] mx-auto border-b border-border/80 pb-4 mb-4 md:border md:border-border/70 md:rounded-2xl md:shadow-md md:shadow-primary/[0.04] md:bg-card/80 md:backdrop-blur-sm md:pb-0 md:overflow-hidden ring-brand-soft">
       {/* Header */}
-      <div className="flex items-center justify-between p-3">
+      <div className="flex items-center justify-between p-3 md:px-4">
         <div className="flex items-center gap-3 cursor-pointer hover:opacity-80">
           <div className={cn("p-[2px] rounded-full", user.status === 'online' && "bg-gradient-to-tr from-yellow-400 to-purple-600")}>
              <Avatar className="w-8 h-8 border-2 border-background">
@@ -37,17 +45,19 @@ export function PostCard({ post }: PostCardProps) {
       </div>
 
       {/* Image */}
-      <div className="relative aspect-square bg-muted overflow-hidden">
+      <div className="relative aspect-square bg-muted overflow-hidden group/img">
         <img 
           src={post.imageUrl} 
-          alt={post.caption} 
-          className="object-cover w-full h-full"
+          alt={post.caption || 'Post image'} 
+          className="object-cover w-full h-full transition-transform duration-500 ease-out group-hover/img:scale-[1.02]"
           loading="lazy"
+          decoding="async"
         />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/[0.06] via-transparent to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity" />
       </div>
 
       {/* Actions */}
-      <div className="p-3 pb-1">
+      <div className="p-3 pb-1 md:px-4">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-4">
             <button 
@@ -78,17 +88,17 @@ export function PostCard({ post }: PostCardProps) {
         <div className="space-y-1">
            <p className="text-sm">
              <span className="font-semibold mr-2">{user.username}</span>
-             {post.caption}
+             {post.caption ?? ''}
            </p>
         </div>
 
         <p className="text-xs text-muted-foreground uppercase mt-2">
-          {formatDistanceToNow(post.timestamp)} ago
+          {formatDistanceToNow(at)} ago
         </p>
       </div>
       
       {/* Add Comment */}
-      <div className="px-3 py-3 border-t border-border/50 flex items-center gap-3">
+      <div className="px-3 md:px-4 py-3 border-t border-border/50 flex items-center gap-3 bg-muted/20">
          <input 
            type="text" 
            placeholder="Add a comment..." 

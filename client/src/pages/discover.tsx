@@ -12,16 +12,40 @@ export default function DiscoverPage() {
   const viralReels = REELS.filter(r => r.likes > 5000);
 
   return (
-    <div className="w-full h-screen bg-background">
+    <div className="w-full min-h-screen bg-background">
+      <div className="max-w-6xl mx-auto px-4 pt-6 pb-2">
+        <div className="relative overflow-hidden rounded-3xl border border-border/70 bg-gradient-to-br from-card via-card to-primary/[0.06] p-6 md:p-8 shadow-lg shadow-primary/5">
+          <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/15 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-fuchsia-500/10 blur-2xl pointer-events-none" />
+          <div className="relative">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary mb-2">Discover</p>
+            <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+              Videos picked for you
+            </h1>
+            <p className="mt-2 text-sm text-muted-foreground max-w-xl leading-relaxed">
+              Swipe-worthy clips from creators you might love. Switch tabs to explore what&apos;s heating up or breaking the internet.
+            </p>
+          </div>
+        </div>
+      </div>
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full">
-        <TabsList className="w-full justify-center gap-4 bg-card border-b rounded-none p-4 sticky top-0 z-10">
-          <TabsTrigger value="for-you" className="text-base font-semibold">
+        <TabsList className="w-full justify-center gap-1 md:gap-2 bg-transparent border-b border-border/60 rounded-none p-3 md:p-4 sticky top-0 z-10 backdrop-blur-md bg-background/80">
+          <TabsTrigger
+            value="for-you"
+            className="rounded-full px-5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
+          >
             For You
           </TabsTrigger>
-          <TabsTrigger value="trending" className="text-base font-semibold">
+          <TabsTrigger
+            value="trending"
+            className="rounded-full px-5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
+          >
             Trending
           </TabsTrigger>
-          <TabsTrigger value="viral" className="text-base font-semibold flex items-center gap-2">
+          <TabsTrigger
+            value="viral"
+            className="rounded-full px-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md flex items-center gap-2"
+          >
             <Zap className="w-4 h-4" /> Viral
           </TabsTrigger>
         </TabsList>
@@ -33,7 +57,7 @@ export default function DiscoverPage() {
               return (
                 <div
                   key={reel.id}
-                  className="bg-card rounded-xl border border-border overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow"
+                  className="bg-card rounded-2xl border border-border/80 overflow-hidden group cursor-pointer hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-0.5 transition-all duration-300 ring-brand-soft"
                 >
                   <div className="relative aspect-video bg-muted overflow-hidden">
                     <video

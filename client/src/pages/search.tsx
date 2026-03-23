@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 const RECENT_KEY = "pulse-search-recent";
@@ -154,19 +155,21 @@ export default function SearchPage() {
   }, [hasQuery, users.length, posts.length]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-secondary/20">
-      <div className="max-w-3xl mx-auto px-4 pt-6 pb-24 md:pb-10">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-secondary/25 relative overflow-hidden">
+      <div className="pointer-events-none absolute top-0 right-0 h-72 w-72 rounded-full bg-primary/12 blur-[100px]" />
+      <div className="pointer-events-none absolute bottom-20 left-0 h-56 w-56 rounded-full bg-fuchsia-500/10 blur-[80px]" />
+      <div className="max-w-3xl mx-auto px-4 pt-6 pb-24 md:pb-10 relative">
         {/* Header — distinct from Home (no feed layout) */}
-        <header className="mb-8">
-          <div className="flex items-center gap-2 text-primary mb-1">
-            <Sparkles className="w-5 h-5" />
-            <span className="text-xs font-semibold uppercase tracking-wider">Explore</span>
+        <header className="mb-8 relative">
+          <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-3 py-1 mb-3 border border-primary/20">
+            <Sparkles className="w-4 h-4" />
+            <span className="text-[11px] font-bold uppercase tracking-[0.2em]">Explore</span>
           </div>
-          <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight">
+          <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground via-foreground to-primary/90 bg-clip-text text-transparent">
             Search Pulse
           </h1>
-          <p className="text-muted-foreground text-sm mt-2 max-w-lg">
-            Find people, posts, and places — different from your home feed, built for discovery.
+          <p className="text-muted-foreground text-sm mt-3 max-w-lg leading-relaxed">
+            Look up creators, captions, and locations in one place. Results update as you type — save your favorite searches to pick up later.
           </p>
         </header>
 
@@ -176,8 +179,8 @@ export default function SearchPage() {
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Search users, captions, locations…"
-            className="pl-11 pr-24 h-12 text-base rounded-2xl border-border/80 bg-card shadow-sm focus-visible:ring-primary"
+            placeholder="Try a name, hashtag, or city…"
+            className="pl-11 pr-24 h-12 text-base rounded-2xl border-border/80 bg-card/90 backdrop-blur-sm shadow-md shadow-primary/5 ring-brand-soft focus-visible:ring-2 focus-visible:ring-primary/40"
             autoComplete="off"
             autoCorrect="off"
             spellCheck={false}
@@ -210,9 +213,13 @@ export default function SearchPage() {
                 Recent
               </div>
               {recent.length === 0 ? (
-                <p className="text-sm text-muted-foreground py-4 border border-dashed rounded-2xl text-center">
-                  Your recent searches will appear here.
-                </p>
+                <div className="py-12 px-4 border border-dashed border-primary/20 rounded-3xl text-center bg-gradient-to-b from-muted/30 to-transparent">
+                  <Search className="w-10 h-10 mx-auto text-primary/40 mb-3" />
+                  <p className="text-sm font-medium text-foreground">No recents yet</p>
+                  <p className="text-xs text-muted-foreground mt-1 max-w-xs mx-auto">
+                    Search for people or topics — we&apos;ll keep the last few here for quick access.
+                  </p>
+                </div>
               ) : (
                 <div className="flex flex-wrap gap-2">
                   {recent.map((r) => (
@@ -259,13 +266,36 @@ export default function SearchPage() {
             <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span>
                 {loading
-                  ? "Searching…"
+                  ? "Searching the community…"
                   : totalResults === 0
                     ? `No results for “${debounced}”`
                     : `${totalResults} result${totalResults === 1 ? "" : "s"} for “${debounced}”`}
               </span>
             </div>
 
+            {loading && (
+              <div className="space-y-6">
+                <div className="space-y-3">
+                  <Skeleton className="h-4 w-24" />
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center gap-4 p-3 rounded-2xl border border-border/50 bg-card/50">
+                      <Skeleton className="h-12 w-12 rounded-full shrink-0" />
+                      <div className="flex-1 space-y-2">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-3 w-48" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 md:gap-3">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <Skeleton key={i} className="aspect-square rounded-2xl" />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!loading && (
             <Tabs defaultValue={tabDefault} className="w-full">
               <TabsList className="grid w-full grid-cols-3 max-w-md rounded-2xl bg-secondary/50 p-1">
                 <TabsTrigger value="all" className="rounded-xl data-[state=active]:bg-card">
@@ -334,6 +364,7 @@ export default function SearchPage() {
                 )}
               </TabsContent>
             </Tabs>
+            )}
           </div>
         )}
       </div>
@@ -398,8 +429,10 @@ function PostThumb({ post }: { post: ApiPost }) {
 
 function Empty({ label }: { label: string }) {
   return (
-    <div className="text-center py-16 text-muted-foreground border border-dashed rounded-3xl">
-      {label}
+    <div className="text-center py-14 px-6 text-muted-foreground border border-dashed border-border/80 rounded-3xl bg-muted/20">
+      <ImageIcon className="w-10 h-10 mx-auto mb-3 opacity-40" />
+      <p className="text-sm font-medium text-foreground/80">{label}</p>
+      <p className="text-xs mt-2 opacity-80">Try another keyword or check spelling.</p>
     </div>
   );
 }
