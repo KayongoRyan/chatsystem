@@ -4,7 +4,7 @@ import path from 'path';
 
 /**
  * Vite plugin that updates og:image and twitter:image meta tags
- * to point to the app's opengraph image with the correct Replit domain.
+ * when SITE_URL or VITE_APP_URL is set (full origin, e.g. https://pulse.example.com).
  */
 export function metaImagesPlugin(): Plugin {
   return {
@@ -12,7 +12,7 @@ export function metaImagesPlugin(): Plugin {
     transformIndexHtml(html) {
       const baseUrl = getDeploymentUrl();
       if (!baseUrl) {
-        log('[meta-images] no Replit deployment domain found, skipping meta tag updates');
+        log('[meta-images] no SITE_URL / VITE_APP_URL, skipping absolute meta image URLs');
         return html;
       }
 
@@ -56,19 +56,13 @@ export function metaImagesPlugin(): Plugin {
 }
 
 function getDeploymentUrl(): string | null {
-  if (process.env.REPLIT_INTERNAL_APP_DOMAIN) {
-    const url = `https://${process.env.REPLIT_INTERNAL_APP_DOMAIN}`;
-    log('[meta-images] using internal app domain:', url);
-    return url;
+  const raw = process.env.SITE_URL?.trim() || process.env.VITE_APP_URL?.trim();
+  if (!raw) {
+    return null;
   }
-
-  if (process.env.REPLIT_DEV_DOMAIN) {
-    const url = `https://${process.env.REPLIT_DEV_DOMAIN}`;
-    log('[meta-images] using dev domain:', url);
-    return url;
-  }
-
-  return null;
+  const normalized = raw.replace(/\/$/, '');
+  log('[meta-images] using deployment URL:', normalized);
+  return normalized;
 }
 
 function log(...args: any[]): void {

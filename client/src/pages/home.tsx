@@ -152,7 +152,7 @@ export default function HomePage() {
          </div>
 
          <div className="text-xs text-muted-foreground/50 leading-relaxed">
-            <p>© 2025 PULSE FROM REPLIT</p>
+            <p>© 2025 Pulse</p>
          </div>
       </div>
     </div>

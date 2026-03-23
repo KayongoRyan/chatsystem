@@ -124,6 +124,8 @@ All data is currently stored in memory using React state. The app includes:
 
 Vercel config is included in `vercel.json`
 
+**Social preview images:** Add `client/public/opengraph.png` (or `.jpg` / `.jpeg`). For production builds, set `SITE_URL` or `VITE_APP_URL` to your site origin (e.g. `https://your-domain.com`) so `og:image` / `twitter:image` resolve to absolute URLs.
+
 ### Other Platforms
 
 The `dist/public/` folder can be deployed to:
@@ -152,4 +154,4 @@ MIT
 
 ## Author
 
-Built with Replit Design System
+Built with React, Vite, Tailwind CSS, and shadcn/ui
