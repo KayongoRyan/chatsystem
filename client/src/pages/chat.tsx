@@ -21,9 +21,9 @@ export default function ChatPage() {
     const recipientId = selectedChat?.participants[0].id;
     if (!recipientId) return;
 
-    // Optimistically add message to UI
+    // Optimistically add message to UI (stable unique id for React keys)
     const newMessage = {
-      id: `m-${Date.now()}`,
+      id: `m-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
       senderId: CURRENT_USER.id,
       content,
       timestamp: new Date(),
@@ -40,7 +40,8 @@ export default function ChatPage() {
       return chat;
     }));
 
-    // Send to API
+    // Send to API (optional: no session = local-only demo, no error toast)
+    const optimisticId = newMessage.id;
     try {
       const response = await fetch('/api/messages', {
         method: 'POST',
@@ -48,12 +49,49 @@ export default function ChatPage() {
         body: JSON.stringify({ recipientId, content }),
         credentials: 'include',
       });
-      
-      if (!response.ok) {
-        toast({ title: "Error", description: "Failed to send message", variant: "destructive" });
+
+      if (response.status === 401) {
+        // Not logged in — message stays in UI as demo-only; avoid false "failed to send"
+        return;
       }
-    } catch (error) {
-      toast({ title: "Error", description: "Network error", variant: "destructive" });
+
+      if (!response.ok) {
+        let description = 'Failed to send message';
+        try {
+          const body = (await response.json()) as { error?: string };
+          if (body?.error) description = body.error;
+        } catch {
+          /* ignore */
+        }
+        toast({ title: 'Error', description, variant: 'destructive' });
+        return;
+      }
+
+      const saved = (await response.json()) as {
+        id: string;
+        createdAt: string | Date;
+      };
+      if (saved?.id) {
+        setChats((prev) =>
+          prev.map((chat) => {
+            if (chat.id !== selectedChatId) return chat;
+            return {
+              ...chat,
+              messages: chat.messages.map((m) =>
+                m.id === optimisticId
+                  ? {
+                      ...m,
+                      id: saved.id,
+                      timestamp: new Date(saved.createdAt),
+                    }
+                  : m,
+              ),
+            };
+          }),
+        );
+      }
+    } catch {
+      toast({ title: 'Error', description: 'Network error', variant: 'destructive' });
     }
 
     // Simulate reply
@@ -163,9 +201,8 @@ export default function ChatPage() {
         {selectedChat ? (
           <>
             <div className="flex-1 overflow-hidden">
-              <ChatArea 
-                chat={selectedChat} 
-                onSendMessage={handleSendMessage}
+              <ChatArea
+                chat={selectedChat}
                 onStartAudioCall={() => handleStartCall('audio')}
                 onStartVideoCall={() => handleStartCall('video')}
               />

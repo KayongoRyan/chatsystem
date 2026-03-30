@@ -29,6 +29,12 @@ export async function setupVite(server: Server, app: Express) {
     appType: "custom",
   });
 
+  // middlewareMode skips config server.warmup — pre-transform entry so first phone load is faster
+  void vite.warmupRequest("/src/main.tsx");
+
+  // One bust per dev server lifetime; per-request nanoid forced a cold URL every load (very slow on Wi‑Fi)
+  const mainEntryCacheBust = nanoid();
+
   app.use(vite.middlewares);
 
   app.use("*", async (req, res, next) => {
@@ -46,7 +52,7 @@ export async function setupVite(server: Server, app: Express) {
       let template = await fs.promises.readFile(clientTemplate, "utf-8");
       template = template.replace(
         `src="/src/main.tsx"`,
-        `src="/src/main.tsx?v=${nanoid()}"`,
+        `src="/src/main.tsx?v=${mainEntryCacheBust}"`,
       );
       const page = await vite.transformIndexHtml(url, template);
       res.status(200).set({ "Content-Type": "text/html" }).end(page);
