@@ -96,7 +96,9 @@ export function setupWebSocket(httpServer: Server) {
           activeUsers.delete(userId);
         }
       });
-      console.log(`User ${disconnectedUser} disconnected`);
+      if (disconnectedUser != null) {
+        console.log(`User ${disconnectedUser} disconnected`);
+      }
       io.emit("users-online", Array.from(activeUsers.keys()));
     });
   });

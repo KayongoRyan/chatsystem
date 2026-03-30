@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -36,6 +37,12 @@ function Router() {
 }
 
 function App() {
+  // In dev, optional server-side session (DEV_AUTO_LOGIN=true in .env) so APIs like POST /api/messages are authenticated
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    void fetch("/api/auth/dev-session", { credentials: "include" });
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>

@@ -51,6 +51,40 @@ export async function registerRoutes(
     res.json(user);
   });
 
+  /**
+   * Development only: set session cookie so /api/messages works without a login UI.
+   * Requires at least one user in the DB (register via POST /api/auth/register) unless DEV_USER_ID is set.
+   */
+  app.get("/api/auth/dev-session", async (req, res) => {
+    if (process.env.NODE_ENV !== "development") {
+      return res.status(404).end();
+    }
+    if (process.env.DEV_AUTO_LOGIN !== "true") {
+      return res.status(403).json({ error: "DEV_AUTO_LOGIN is not enabled" });
+    }
+    try {
+      const explicitId = process.env.DEV_USER_ID?.trim();
+      if (explicitId) {
+        const user = await storage.getUser(explicitId);
+        if (!user) {
+          return res.status(400).json({ error: "DEV_USER_ID does not match any user" });
+        }
+        req.session.userId = user.id;
+        return res.json(user);
+      }
+      const all = await storage.getAllUsers();
+      if (all.length === 0) {
+        return res.status(400).json({
+          error: "No users in database. Register with POST /api/auth/register first.",
+        });
+      }
+      req.session.userId = all[0].id;
+      return res.json(all[0]);
+    } catch {
+      res.status(500).json({ error: "Dev session failed" });
+    }
+  });
+
   // Users Routes
   app.get("/api/users/:id", async (req, res) => {
     const user = await storage.getUser(req.params.id);
